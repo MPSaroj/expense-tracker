@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+      <div class="card-heading auth-head">
+        <p class="eyebrow">Secure Access</p>
+        <h2 id="authTitle">Welcome Back</h2>
+        <p class="subtitle">Login or register to keep your financial data private in browser storage.</p>
+      </div>
+      <form id="authForm">
+        <div class="field-row">
+          <label for="usernameInput">Username</label>
+          <input id="usernameInput" type="text" placeholder="Enter username" required />
+        </div>
+        <div class="field-row">
+          <label for="passwordInput">Password</label>
+          <input id="passwordInput" type="password" placeholder="Enter password" required />
+        </div>
+        <div class="field-row hidden" id="confirmPasswordWrapper">
+          <label for="confirmPasswordInput">Confirm Password</label>
+          <input id="confirmPasswordInput" type="password" placeholder="Confirm password" />
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="authSubmit" class="primary">Login</button>
+          <button type="button" id="switchAuthMode" class="secondary">Create account</button>
+        </div>
+        <p class="auth-note" id="authNote">Don’t have an account? Register now.</p>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-shell hidden" id="dashboard">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Personal Finance</p>
+        <h1>Expense Tracker</h1>
+        <p class="subtitle">Track expenses in Indian rupees, manage budgets, and review spending trends with local storage.</p>
+      </div>
+      <div class="topbar-right">
+        <div class="user-panel hidden" id="userPanel">
+          <span id="greeting">Hello, User</span>
+          <button id="logoutButton" class="secondary small">Logout</button>
+        </div>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </div>
+    </header>
+
+    <section class="quick-action-bar">
+      <button id="quickIncomeButton" class="secondary">Quick Income</button>
+      <button id="quickExpenseButton" class="secondary">Quick Expense</button>
+      <button id="exportCsvButton" class="secondary">Export CSV</button>
+    </section>
+
+    <main>
+      <section class="summary-grid" aria-label="Financial Summary">
+        <article class="card summary-card income-card">
+          <p>Total Income</p>
+          <h2 id="incomeTotal">₹0.00</h2>
+        </article>
+        <article class="card summary-card expense-card">
+          <p>Total Expenses</p>
+          <h2 id="expenseTotal">₹0.00</h2>
+        </article>
+        <article class="card summary-card balance-card">
+          <p>Current Balance</p>
+          <h2 id="balanceTotal">₹0.00</h2>
+        </article>
+        <article class="card summary-card trend-card">
+          <p>Transactions</p>
+          <h2 id="transactionCount">0</h2>
+        </article>
+        <article class="card summary-card budget-card">
+          <p>Budget Target</p>
+          <h2 id="budgetTotal">₹50,000</h2>
+          <p class="micro-text" id="budgetStatus">Stay within your goal.</p>
+        </article>
+      </section>
+
+      <section class="grid layout-grid">
+        <article class="card form-card">
+          <div class="card-heading">
+            <h2>Add / Edit Transaction</h2>
+            <p>Income, expense, categories, dates, and recurring entries.</p>
+          </div>
+          <form id="transactionForm">
+            <div class="field-row">
+              <label for="type">Type</label>
+              <select id="type" required>
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label for="description">Description</label>
+              <input id="description" type="text" placeholder="Coffee, salary, bill..." required />
+            </div>
+            <div class="field-row double">
+              <div>
+                <label for="amount">Amount</label>
+                <input id="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required />
+              </div>
+              <div>
+                <label for="date">Date</label>
+                <input id="date" type="date" required />
+              </div>
+            </div>
+            <div class="field-row double">
+              <div>
+                <label for="category">Category</label>
+                <select id="category" required>
+                  <option value="Food">Food</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Salary">Salary</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Health">Health</option>
+                  <option value="Other">Other</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div id="customCategoryWrapper" class="hidden">
+                <label for="customCategory">Custom Category</label>
+                <input id="customCategory" type="text" placeholder="Enter category" />
+              </div>
+            </div>
+            <div class="field-row">
+              <label for="recurrence">Recurring</label>
+              <select id="recurrence">
+                <option value="none">None</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" id="saveButton" class="primary">Save Transaction</button>
+              <button type="button" id="clearFormButton" class="secondary">Reset</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card transaction-card">
+          <div class="card-heading">
+            <h2>Transactions</h2>
+            <p>Search, filter, and manage your expense history.</p>
+          </div>
+          <div class="filter-panel">
+            <div>
+              <label for="searchText">Search</label>
+              <input id="searchText" type="text" placeholder="Search description or category" />
+            </div>
+            <div>
+              <label for="filterType">Type</label>
+              <select id="filterType">
+                <option value="all">All</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+            <div>
+              <label for="filterCategory">Category</label>
+              <select id="filterCategory">
+                <option value="all">All</option>
+                <option value="Food">Food</option>
+                <option value="Transport">Transport</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Rent">Rent</option>
+                <option value="Salary">Salary</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Health">Health</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="fromDate">From</label>
+              <input id="fromDate" type="date" />
+            </div>
+            <div>
+              <label for="toDate">To</label>
+              <input id="toDate" type="date" />
+            </div>
+            <div class="filter-actions">
+              <button id="resetFiltersButton" type="button">Reset Filters</button>
+              <button id="clearAllButton" type="button" class="danger">Clear All</button>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table aria-label="Transaction table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Recurrence</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="transactionList"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="grid chart-grid">
+        <article class="card chart-card">
+          <div class="card-heading">
+            <h2>Category Breakdown</h2>
+            <p>See where your money is going.</p>
+          </div>
+          <canvas id="categoryChart" height="300"></canvas>
+        </article>
+        <article class="card chart-card">
+          <div class="card-heading">
+            <h2>Monthly Cash Flow</h2>
+            <p>Monthly income vs expense trend.</p>
+          </div>
+          <canvas id="trendChart" height="300"></canvas>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
